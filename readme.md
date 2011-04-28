@@ -4,9 +4,8 @@ The [GameStamper Platform][dev] is a set of APIs that make your application more
 
 This repository contains the open source ActionScript SDK that allows you to utilize the above on your website.
 
-[dev]: http://gamestamper.com/developer
-[docs]: http://gamestamper.com/developer/docs
-[API]: http://gamestamper.com/developer/docs/api/graphapi
+[dev]: http://gamestamper.com
+[docs]: http://gamestamper.com/docs
 
 
 Feedback
