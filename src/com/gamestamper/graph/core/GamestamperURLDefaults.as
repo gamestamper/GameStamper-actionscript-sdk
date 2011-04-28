@@ -74,16 +74,16 @@ package com.gamestamper.graph.core {
     public static var DESKTOP_REDIRECT_URL:String
       = 'http://gamestamper.com/connect/login_success.html';
 
-	public static var MOBILE_REDIRECT_URL:String
+    public static var MOBILE_REDIRECT_URL:String
 	  = 'http://gamestamper.com/connect/login_success.html';
 
-	public static var LOGIN_FAIL_URL:String
+    public static var LOGIN_FAIL_URL:String
 	  = 'http://gamestamper.com/connect/login_success.html?error_reason';
 
-	public static var LOGIN_URL:String
+    public static var LOGIN_URL:String
 	  = 'https://login.gamestamper.com/login.php';
 
-	public static var AUTHORIZE_CANCEL:String
+    public static var AUTHORIZE_CANCEL:String
 	  = 'https://graph.gamestamper.com/oauth/authorize_cancel';
   }
 }
