@@ -1,4 +1,4 @@
-﻿package com.gamestamper.graph {
+package com.gamestamper.graph {
 
   import com.adobe.serialization.json.JSON;
   import com.adobe.serialization.json.JSONParseError;
@@ -131,7 +131,7 @@
 	public static function decodeSignedRequest(signedRequest:String):Object {
 		var v:Object = signedRequest.split('.');
 		var payload:String = Base64.decode(v[1]);
-		return JSON.decode(payload);
+		return JSONDecode(payload);
 	}
 
    /**
@@ -243,6 +243,15 @@
 
       getInstance().ui(method, data, callback, display);
     }
+
+	
+	public static function JSONEncode(obj:Object):String {
+		return com.adobe.serialization.json.JSON.encode(obj);
+	}
+
+	public static function JSONDecode(str:String) {
+		return com.adobe.serialization.json.JSON.decode(str);
+	}
 
     /**
      * Makes a new request on the Gamestamper Graph API.
@@ -480,8 +489,14 @@
 
       if (options == null) { options = {};}
       options.appId = applicationId;
-	  
-      ExternalInterface.call('FBAS.init', JSON.encode(options));
+      var params:Object = readQueryString();
+      if (params['gsgraph']) {
+		GamestamperURLDefaults.GRAPH_URL = params['gsgraph'];
+      }
+      if (params['gsapi']) {
+		GamestamperURLDefaults.API_URL = params['gsapi'];
+      }
+      ExternalInterface.call('GSAS.init', JSONEncode(options));
 	  
 	  if (accessToken != null) {		  
 		  session = new GamestamperSession();
@@ -497,7 +512,7 @@
      *
      */
     protected function getLoginStatus():void {
-      ExternalInterface.call('FBAS.getLoginStatus');
+      ExternalInterface.call('GSAS.getLoginStatus');
     }
 
     /**
@@ -513,7 +528,7 @@
      *
      */
     protected function setCanvasSize(width:Number, height:Number):void {
-      ExternalInterface.call('FBAS.setCanvasSize', width, height);
+      ExternalInterface.call('GSAS.setCanvasSize', width, height);
     }
 
     /**
@@ -524,7 +539,7 @@
                          interval:uint = 100
     ):void {
 
-      ExternalInterface.call('FBAS.setCanvasAutoResize',
+      ExternalInterface.call('GSAS.setCanvasAutoResize',
         autoSize,
         interval
       );
@@ -537,7 +552,7 @@
     protected function login(callback:Function, options:Object = null):void {
       _loginCallback = callback;
 
-      ExternalInterface.call('FBAS.login', JSON.encode(options));
+      ExternalInterface.call('GSAS.login', JSONEncode(options));
     }
 
     /**
@@ -546,7 +561,7 @@
      */
     protected function logout(callback:Function):void {
       _logoutCallback = callback;      
-      ExternalInterface.call('FBAS.logout');
+      ExternalInterface.call('GSAS.logout');
     }
 
     /**
@@ -554,11 +569,11 @@
      *
      */
     protected function getSession():GamestamperSession {
-      var result:String = ExternalInterface.call('FBAS.getSession');
+      var result:String = ExternalInterface.call('GSAS.getSession');
       var sessionObj:Object;
 
       try {
-        sessionObj = JSON.decode(result);
+        sessionObj = JSONDecode(result);
       } catch (e:*) {
         return null;
       }
@@ -590,7 +605,7 @@
         data.display = display;
       }
 
-      ExternalInterface.call('FBAS.ui', JSON.encode(data));
+      ExternalInterface.call('GSAS.ui', JSONEncode(data));
     }
 
     /**
@@ -644,7 +659,7 @@
 	 *
 	 */
 	protected function handleUI( result:String, method:String ):void {
-		var decodedResult:Object = result ? JSON.decode(result) : null;
+		var decodedResult:Object = result ? JSONDecode(result) : null;
 		var uiCallback:Function = openUICalls[method];
 		if (uiCallback === null) {
 			delete openUICalls[method];
@@ -677,7 +692,7 @@
       if (jsCallbacks[event] != null) {
         var decodedResult:Object;
         try {
-          decodedResult = JSON.decode(result);
+          decodedResult = JSONDecode(result);
         } catch (e:JSONParseError) { }
 
         for (var func:Object in jsCallbacks[event]) {
@@ -699,7 +714,7 @@
 
       if (result != null) {
         try {
-          resultObj = JSON.decode(result);
+          resultObj = JSONDecode(result);
         } catch (e:JSONParseError) {
           success = false;
         }
@@ -717,7 +732,7 @@
 
         if (permissions != null) {
           try {
-            session.availablePermissions = JSON.decode(permissions);
+            session.availablePermissions = JSONDecode(permissions);
           } catch (e:JSONParseError) {
             session.availablePermissions = null;
           }
@@ -747,5 +762,39 @@
       }
       return _instance;
     }
+
+    public static function getQueryParameters():Object {
+		return getInstance().readQueryString();
+    }
+
+	public function readQueryString():Object
+	{
+	        var _params:Object = {};
+	        try
+	        {
+	          var _all:String =
+	  ExternalInterface.call("window.location.href.toString");
+	          var _queryString:String =
+	  ExternalInterface.call("window.location.search.substring", 1);
+	          if(_queryString)
+				{
+
+				var params:Array = _queryString.split('&');
+				var length:uint = params.length;
+
+				for (var i:uint=0,index:int=-1; i<length; i++)
+				{
+					var kvPair:String = params[i];
+					if((index = kvPair.indexOf("=")) > 0)
+					{
+						var key:String = kvPair.substring(0,index);
+						var value:String = kvPair.substring(index+1);
+						_params[unescape(key)] = unescape(value);
+					}
+				}
+				}
+	          }catch(e:Error) { trace("Some error occured. ExternalInterface doesn't work in Standalone player."); }
+		  return _params;
+	}
   }
 }
