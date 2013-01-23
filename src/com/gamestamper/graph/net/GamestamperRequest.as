@@ -1,4 +1,4 @@
-﻿/*
+/*
   Copyright (c) 2010, Adobe Systems Incorporated
   All rights reserved.
 
@@ -33,7 +33,7 @@
 package com.gamestamper.graph.net {
 
     import com.adobe.images.PNGEncoder;
-    import com.adobe.serialization.json.JSON;
+  import com.adobe.serialization.json.JSON;
     import com.gamestamper.graph.utils.PostRequest;
 
     import flash.display.Bitmap;
@@ -380,6 +380,11 @@ package com.gamestamper.graph.net {
             handleDataLoad(urlLoader.data);
         }
 
+		protected function JSONDecode(str:String) {
+			return com.adobe.serialization.json.JSON.decode(str);
+		}
+
+
         /**
         * @private
         *
@@ -392,7 +397,7 @@ package com.gamestamper.graph.net {
             _success = true;
 
             try {
-                _data = JSON.decode(_rawResult);
+                _data = JSONDecode(_rawResult);
             } catch (e:*) {
                 _data = _rawResult;
                 _success = false;
@@ -426,7 +431,7 @@ package com.gamestamper.graph.net {
 
             if (_rawResult != '') {
                 try {
-                    _data = JSON.decode(_rawResult);
+                    _data = JSONDecode(_rawResult);
                 } catch (e:*) {
                     _data = {type:'Exception', message:_rawResult};
                 }
@@ -447,7 +452,7 @@ package com.gamestamper.graph.net {
             _rawResult = (event.target as URLLoader).data;
 
             try {
-                _data = JSON.decode((event.target as URLLoader).data);
+                _data = JSONDecode((event.target as URLLoader).data);
             } catch (e:*) {
                 _data = event;
             }
